@@ -1,6 +1,7 @@
 import RestaurantCard from "./RestaurantCard.jsx";
 import { useState, useEffect } from "react";
-import Shimmer from "./Shimmer.jsx";
+import Shimmer from "./Shimmer.js";
+import { Link } from "react-router-dom";
 
 const Body = () => {
   const [filteredResList, setFilteredResList] = useState([]);
@@ -18,10 +19,6 @@ const Body = () => {
       );
 
       const json = await data.json();
-
-      console.log("FULL JSON:", json);
-
-      // 🔥 DYNAMICALLY FIND THE CARD THAT HAS restaurants
       const cards = json?.data?.cards || [];
 
       const restaurantCard = cards.find(
@@ -45,35 +42,51 @@ const Body = () => {
   }
 
   return (
-    <div className="body">
-      <div className="search">
-        <input
-          type="text"
-          placeholder="Search"
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-        />
+    <main className="mx-auto max-w-7xl px-6 py-6">
+      {/* Search Section */}
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-2xl font-bold text-gray-800">
+          Restaurants Near You 🍽️
+        </h2>
 
-        <button
-          onClick={() => {
-            const filteredList = listofRestaurants.filter((restaurant) =>
-              restaurant.info.name
-                .toLowerCase()
-                .includes(searchText.toLowerCase())
-            );
-            setFilteredResList(filteredList);
-          }}
-        >
-          Search
-        </button>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Search restaurants..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            className="w-64 rounded-lg border border-gray-300 px-4 py-2 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+          />
+
+          <button
+            onClick={() => {
+              const filteredList = listofRestaurants.filter((restaurant) =>
+                restaurant.info.name
+                  .toLowerCase()
+                  .includes(searchText.toLowerCase())
+              );
+              setFilteredResList(filteredList);
+            }}
+            className="rounded-lg bg-orange-500 px-5 py-2 font-medium text-white hover:bg-orange-600 transition"
+          >
+            Search
+          </button>
+        </div>
       </div>
 
-      <div className="res-container">
+      {/* Restaurant Cards Grid */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {filteredResList.map((restaurant) => (
-          <RestaurantCard key={restaurant.info.id} resData={restaurant} />
+          <Link
+            key={restaurant.info.id}
+            to={"/restaurants/" + restaurant.info.id}
+            className="hover:scale-[1.02] transition-transform"
+          >
+            <RestaurantCard resData={restaurant} />
+          </Link>
         ))}
       </div>
-    </div>
+    </main>
   );
 };
 
